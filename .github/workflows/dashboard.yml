@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - 'problems/**'
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight UTC
+  workflow_dispatch:  # Allow manual trigger
 
 jobs:
   rebuild-dashboard:

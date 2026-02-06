@@ -1,23 +1,16 @@
 #!/usr/bin/env python3
 """
 Validate problem markdown files.
-Checks structure, member presence, and valid status symbols.
+Checks structure and valid status symbols.
+No longer validates against a fixed member list - members are dynamic.
 """
 
 import sys
-import json
 import re
 from pathlib import Path
 
 
-def load_members():
-    """Load members from members.json"""
-    members_file = Path(__file__).parent.parent / "members.json"
-    with open(members_file) as f:
-        return json.load(f)
-
-
-def validate_problem_file(filepath: Path, members: list):
+def validate_problem_file(filepath: Path):
     """Validate a single problem file."""
     errors = []
     
@@ -36,14 +29,9 @@ def validate_problem_file(filepath: Path, members: list):
     # Skip header row
     data_rows = [m for m in matches if m[0].strip() != "Member"]
     
-    # Check each member has a row
-    found_members = {row[0].strip() for row in data_rows}
-    for member in members:
-        if member not in found_members:
-            errors.append(f"{filepath.name}: Missing row for member '{member}'")
-    
     # Check for duplicate members
-    if len(found_members) != len(data_rows):
+    found_members = [row[0].strip() for row in data_rows]
+    if len(found_members) != len(set(found_members)):
         errors.append(f"{filepath.name}: Duplicate member rows detected")
     
     # Check valid status symbols
@@ -53,17 +41,11 @@ def validate_problem_file(filepath: Path, members: list):
         if status not in valid_statuses:
             errors.append(f"{filepath.name}: Invalid status '{status}' for {row[0].strip()}")
     
-    # Check only valid members
-    for member in found_members:
-        if member not in members:
-            errors.append(f"{filepath.name}: Unknown member '{member}'")
-    
     return errors
 
 
 def validate_all_problems():
     """Validate all problem files."""
-    members = load_members()
     problems_dir = Path(__file__).parent.parent / "problems"
     
     if not problems_dir.exists():
@@ -79,7 +61,7 @@ def validate_all_problems():
         return True
     
     for filepath in problem_files:
-        errors = validate_problem_file(filepath, members)
+        errors = validate_problem_file(filepath)
         all_errors.extend(errors)
     
     if all_errors:

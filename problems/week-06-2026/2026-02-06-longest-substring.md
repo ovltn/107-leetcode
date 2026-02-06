@@ -11,3 +11,4 @@
 | alice | ⬜ |  |  |
 | bob | ⬜ |  |  |
 | charlie | ⬜ |  |  |
+| newuser | ⬜ |  |  |

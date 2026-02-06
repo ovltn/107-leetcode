@@ -4,17 +4,8 @@ Generate team dashboard from all problem files.
 Creates DASHBOARD.md with member statistics and leaderboard.
 """
 
-import json
 import re
 from pathlib import Path
-from collections import defaultdict
-
-
-def load_members():
-    """Load members from members.json"""
-    members_file = Path(__file__).parent.parent / "members.json"
-    with open(members_file) as f:
-        return json.load(f)
 
 
 def parse_problem_file(filepath: Path):

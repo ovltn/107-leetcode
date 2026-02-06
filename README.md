@@ -21,7 +21,6 @@ A **GitHub-only** system for tracking team LeetCode progress using Python script
 │   ├── 2026-week-05/  # Week 5 of 2026 problems
 │   └── 2026-week-06/  # Week 6 of 2026 problems
 ├── scripts/            # Python automation scripts
-├── members.json        # (Optional) Initial member list
 ├── DASHBOARD.md        # Auto-generated leaderboard
 └── .github/workflows/  # GitHub Actions CI/CD
 ```
