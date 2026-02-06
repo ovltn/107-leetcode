@@ -67,28 +67,22 @@ def update_submission(filepath: Path, member: str, status: str, submission_url: 
         updated_content = re.sub(pattern, new_row, content, flags=re.MULTILINE)
     else:
         # Member doesn't exist - add new row to the table
-        # Find the table section and add the new row
-        table_end_pattern = r"(\| [^|]+ \| [^|]+ \| [^|]* \| [^|]* \|\n)(?!\|)"
+        # Strategy: Insert the row right after the header separator line
+        header_separator = "|--------|--------|-----------------|-------|"
         
-        # Try to add after the last row
-        if re.search(table_end_pattern, content):
-            updated_content = re.sub(
-                table_end_pattern,
-                rf"\1{new_row}\n",
-                content,
-                count=1,
-                flags=re.MULTILINE
-            )
-            print(f"✨ Added new member '{member}' to the problem")
+        if header_separator in content:
+            # Split content at the header separator
+            parts = content.split(header_separator, 1)
+            if len(parts) == 2:
+                # Reconstruct with the new row added after the separator
+                updated_content = parts[0] + header_separator + "\n" + new_row + "\n" + parts[1].lstrip("\n")
+                print(f"✨ Added new member '{member}' to the problem")
+            else:
+                print(f"Error: Could not parse table in {filepath}")
+                sys.exit(1)
         else:
-            # Fallback: add after the header separator
-            header_pattern = r"(\|--------|--------|-----------------|-------\|\n)"
-            updated_content = re.sub(
-                header_pattern,
-                rf"\1{new_row}\n",
-                content
-            )
-            print(f"✨ Added new member '{member}' to the problem")
+            print(f"Error: Could not find table header in {filepath}")
+            sys.exit(1)
     
     # Write updated content
     with open(filepath, 'w') as f:
