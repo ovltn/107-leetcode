@@ -8,7 +8,3 @@
 
 | Member | Status | Submission Link | Notes |
 |--------|--------|-----------------|-------|
-| alice | ⬜ |  |  |
-| bob | ⬜ |  |  |
-| charlie | ⬜ |  |  |
-| newuser | ⬜ |  |  |
