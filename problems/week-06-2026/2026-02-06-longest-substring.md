@@ -8,3 +8,4 @@
 
 | Member | Status | Submission Link | Notes |
 |--------|--------|-----------------|-------|
+| ovltn | ✅ | [link](https://leetcode.com/submissions/detail/789012/) |  |
