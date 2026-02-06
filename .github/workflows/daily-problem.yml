@@ -1,0 +1,56 @@
+name: Daily Problem
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: 'Problem slug (e.g., two-sum)'
+        required: true
+        type: string
+      title:
+        description: 'Problem title'
+        required: true
+        type: string
+      url:
+        description: 'LeetCode URL'
+        required: true
+        type: string
+      tags:
+        description: 'Problem tags (e.g., Array, Hash Table)'
+        required: true
+        type: string
+  schedule:
+    # Run daily at 9 AM UTC (adjust as needed)
+    - cron: '0 9 * * *'
+
+jobs:
+  create-problem:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Create problem file
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            python scripts/create_problem.py "${{ inputs.slug }}" "${{ inputs.title }}" "${{ inputs.url }}" "${{ inputs.tags }}"
+          else
+            # For cron: create a placeholder problem
+            TODAY=$(date +%Y-%m-%d)
+            python scripts/create_problem.py "placeholder-$TODAY" "Daily Problem Placeholder" "https://leetcode.com" "Placeholder"
+          fi
+      
+      - name: Commit new problem
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add problems/
+          git diff --staged --quiet || git commit -m "🆕 Add daily problem"
+          git push
+

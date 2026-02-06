@@ -1,0 +1,59 @@
+name: Submit Progress
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: 'Problem slug (e.g., two-sum)'
+        required: true
+        type: string
+      status:
+        description: 'Submission status'
+        required: true
+        type: choice
+        options:
+          - solved
+      submission_url:
+        description: 'LeetCode submission URL (required for solved)'
+        required: false
+        type: string
+        default: ''
+      notes:
+        description: 'Optional notes'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Submit progress
+        run: |
+          python scripts/submit.py "${{ github.actor }}" "${{ inputs.slug }}" "${{ inputs.status }}" "${{ inputs.submission_url }}" "${{ inputs.notes }}"
+      
+      - name: Validate changes
+        run: |
+          python scripts/validate.py
+      
+      - name: Update dashboard
+        run: |
+          python scripts/dashboard.py
+      
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add problems/ DASHBOARD.md
+          git diff --staged --quiet || git commit -m "📝 Update: ${{ github.actor }} - ${{ inputs.slug }} (${{ inputs.status }})"
+          git push
+
